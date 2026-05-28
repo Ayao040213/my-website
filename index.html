@@ -209,6 +209,8 @@
         </div>
         <br>
         <button class="btn" onclick="sayHello()">👋 点我一下</button>
+        &nbsp;
+        <button class="btn" onclick="goToGallery()">🖼️ 看看作品集</button>
     </section>
 
     <!-- ===== 第二屏：关于我 ===== -->
@@ -274,6 +276,10 @@
             "你是最棒的学员！🌟",
             "每天进步一点点！💪"
         ];
+
+        function goToGallery() {
+            window.location.href = "gallery.html";
+        }
 
         function sayHello() {
             count = count + 1;

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>作品集 - EyeE Vision 👀</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f0c29;
+            color: white;
+            min-height: 100vh;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 12, 41, 0.95);
+            padding: 15px 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            margin: 0 20px;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: #f093fb; }
+
+        section {
+            padding: 100px 20px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        section h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+        section .subtitle {
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        /* ===== 卡片网格 ===== */
+        .grid {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 30px 25px;
+            width: 250px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(240, 147, 251, 0.15);
+        }
+        .card .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        .card p {
+            color: rgba(255,255,255,0.55);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ===== 返回按钮 ===== */
+        .btn {
+            display: inline-block;
+            padding: 14px 36px;
+            font-size: 18px;
+            color: white;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s;
+            margin-top: 40px;
+        }
+        .btn:hover { transform: scale(1.08); }
+        .btn:active { transform: scale(0.95); }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+        }
+        footer span { color: #f093fb; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .card { animation: fadeIn 0.8s; }
+        .card:nth-child(2) { animation-delay: 0.15s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.45s; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">🏠 回到首页</a>
+        <a href="index.html#about">关于</a>
+        <a href="index.html#skills">技能</a>
+    </nav>
+
+    <section>
+        <h1>我的作品集 🎨</h1>
+        <p class="subtitle">以下是学习编程过程中完成的作品</p>
+
+        <div class="grid">
+            <div class="card">
+                <div class="icon">🌐</div>
+                <h3>个人主页</h3>
+                <p>第一个网页，从"你好世界"开始，逐步加上照片、时钟和互动按钮。</p>
+            </div>
+            <div class="card">
+                <div class="icon">⏰</div>
+                <h3>实时时钟</h3>
+                <p>用 JavaScript 定时器实现的数字时钟，每秒自动刷新。</p>
+            </div>
+            <div class="card">
+                <div class="icon">🎯</div>
+                <h3>互动按钮</h3>
+                <p>点击后会弹出问候语并改变页面文字，每次点击都有不同回应。</p>
+            </div>
+            <div class="card">
+                <div class="icon">🚀</div>
+                <h3>页面跳转</h3>
+                <p>学会用 JavaScript 在多个页面之间导航，构建完整网站。</p>
+            </div>
+        </div>
+
+        <a href="index.html" class="btn">← 返回首页</a>
+    </section>
+
+    <footer>
+        由 <span>EyeE Vision</span> 在 Claude Code 老师的帮助下完成 &copy; 2026
+    </footer>
+</body>
+</html>
