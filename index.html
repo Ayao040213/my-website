@@ -140,28 +140,37 @@
         .btn:hover { transform: scale(1.08); }
         .btn:active { transform: scale(0.95); }
 
-        /* ===== 心率线动画 ===== */
-        .heart-rate {
+        /* ===== 眼睛容器 ===== */
+        .eye-container {
             position: relative;
             z-index: 1;
-            width: 120px;
-            height: 40px;
+            width: 160px;
+            height: 100px;
             margin: 0 auto 20px;
         }
-        .heart-rate svg {
+        .eye-container svg {
             width: 100%;
             height: 100%;
         }
-        .heart-rate path {
-            fill: none;
+        /* 眼睛外框 */
+        .eye-outline {
+            fill: white;
             stroke: #4a90b8;
-            stroke-width: 2;
-            animation: pulse 1.5s ease-in-out infinite;
+            stroke-width: 3;
         }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50%      { opacity: 1; }
+        /* 虹膜（彩色部分） */
+        .iris {
+            fill: #4a90b8;
+            transition: transform 0.05s ease-out;
+        }
+        /* 瞳孔 */
+        .pupil {
+            fill: #1a3a4a;
+        }
+        /* 高光 */
+        .highlight {
+            fill: white;
+            opacity: 0.8;
         }
 
         /* ===== 第二屏：关于我 ===== */
@@ -277,11 +286,18 @@
 
         <img class="avatar" src="myphoto.jpg" alt="我的照片">
 
-        <!-- 心率线 SVG -->
-        <div class="heart-rate">
-            <svg viewBox="0 0 200 50">
-                <path d="M0 25 L30 25 L40 25 L48 10 L56 40 L64 25 L80 25 L200 25"
-                      stroke-linejoin="round"/>
+        <!-- 眼睛 SVG -->
+        <div class="eye-container" id="eyeContainer">
+            <svg viewBox="0 0 160 100">
+                <!-- 眼睛外框（杏仁形） -->
+                <ellipse cx="80" cy="50" rx="75" ry="42"
+                         class="eye-outline"/>
+                <!-- 虹膜组（会跟着鼠标动） -->
+                <g id="irisGroup">
+                    <circle cx="80" cy="50" r="22" class="iris"/>
+                    <circle cx="80" cy="50" r="10" class="pupil"/>
+                    <circle cx="74" cy="44" r="5"  class="highlight"/>
+                </g>
             </svg>
         </div>
 
@@ -337,6 +353,31 @@
     </footer>
 
     <script>
+        // ===== 眼球跟随鼠标 =====
+        const irisGroup = document.getElementById("irisGroup");
+        const eyeContainer = document.getElementById("eyeContainer");
+
+        document.addEventListener("mousemove", function(e) {
+            let eyeRect = eyeContainer.getBoundingClientRect();
+            let eyeCenterX = eyeRect.left + eyeRect.width / 2;
+            let eyeCenterY = eyeRect.top + eyeRect.height / 2;
+
+            // 计算鼠标相对于眼睛中心的角度
+            let dx = e.clientX - eyeCenterX;
+            let dy = e.clientY - eyeCenterY;
+            let angle = Math.atan2(dy, dx);
+
+            // 最大移动距离（限制在眼睛范围内）
+            let maxDist = 18;
+            let dist = Math.min(Math.sqrt(dx*dx + dy*dy) / 15, maxDist);
+
+            let moveX = Math.cos(angle) * dist;
+            let moveY = Math.sin(angle) * dist;
+
+            irisGroup.setAttribute("transform",
+                "translate(" + moveX + ", " + moveY + ")");
+        });
+
         // ===== 实时时钟 =====
         function updateClock() {
             let now = new Date();
