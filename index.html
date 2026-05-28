@@ -140,10 +140,9 @@
         .btn:hover { transform: scale(1.08); }
         .btn:active { transform: scale(0.95); }
 
-        /* ===== 眼睛容器（一双眼睛） ===== */
+        /* ===== 眼睛容器 ===== */
         .eyes-wrapper {
             display: flex;
-            gap: 15px;
             justify-content: center;
             position: relative;
             z-index: 1;
@@ -151,41 +150,61 @@
         }
         .eye-container {
             position: relative;
-            width: 140px;
-            height: 90px;
+            width: 200px;
+            height: 120px;
         }
         .eye-container svg {
             width: 100%;
             height: 100%;
         }
-        /* 眼睛外框 */
-        .eye-outline {
-            fill: white;
-            stroke: #4a90b8;
-            stroke-width: 3;
-            transform-origin: center;
-        }
-        /* 眨眼动画 */
-        .eye-container.blink .eye-outline {
+        /* 眨眼：整个眼睛组一起缩放 */
+        .eye-container.blink .eye-all {
             animation: blinkFrame 0.3s ease-in-out;
         }
         @keyframes blinkFrame {
             0%   { transform: scaleY(1); }
-            50%  { transform: scaleY(0.08); }
+            40%  { transform: scaleY(0.06); }
             100% { transform: scaleY(1); }
         }
-        /* 虹膜（彩色部分） */
-        .iris {
-            fill: #4a90b8;
+        /* 虹膜 */
+        .iris-shape {
+            fill: url(#irisGradient);
+            stroke: rgba(0,0,0,0.15);
+            stroke-width: 1;
         }
         /* 瞳孔 */
-        .pupil {
-            fill: #1a3a4a;
+        .pupil-shape {
+            fill: #111;
         }
         /* 高光 */
-        .highlight {
+        .hl-main {
             fill: white;
-            opacity: 0.8;
+        }
+        .hl-sub {
+            fill: white;
+            opacity: 0.6;
+        }
+        /* 上眼睑线 */
+        .lid-upper {
+            fill: none;
+            stroke: #3b6d8e;
+            stroke-width: 3;
+            stroke-linecap: round;
+        }
+        /* 下眼睑线 */
+        .lid-lower {
+            fill: none;
+            stroke: #6b9db8;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+        }
+        /* 双眼皮褶皱 */
+        .lid-crease {
+            fill: none;
+            stroke: #b0c8d8;
+            stroke-width: 1;
+            stroke-linecap: round;
+            opacity: 0.7;
         }
 
         /* ===== 第二屏：关于我 ===== */
@@ -301,29 +320,58 @@
 
         <img class="avatar" src="myphoto.jpg" alt="我的照片">
 
-        <!-- 一双眼睛 -->
+        <!-- 眼睛 -->
         <div class="eyes-wrapper">
-            <!-- 左眼 -->
-            <div class="eye-container" id="leftEye">
-                <svg viewBox="0 0 160 100">
-                    <ellipse cx="80" cy="50" rx="70" ry="38"
-                             class="eye-outline"/>
-                    <g id="leftIris">
-                        <circle cx="80" cy="50" r="22" class="iris"/>
-                        <circle cx="80" cy="50" r="10" class="pupil"/>
-                        <circle cx="74" cy="44" r="5"  class="highlight"/>
-                    </g>
-                </svg>
-            </div>
-            <!-- 右眼 -->
-            <div class="eye-container" id="rightEye">
-                <svg viewBox="0 0 160 100">
-                    <ellipse cx="80" cy="50" rx="70" ry="38"
-                             class="eye-outline"/>
-                    <g id="rightIris">
-                        <circle cx="80" cy="50" r="22" class="iris"/>
-                        <circle cx="80" cy="50" r="10" class="pupil"/>
-                        <circle cx="74" cy="44" r="5"  class="highlight"/>
+            <div class="eye-container" id="theEye">
+                <svg viewBox="0 0 200 120">
+                    <defs>
+                        <!-- 虹膜径向渐变 -->
+                        <radialGradient id="irisGradient" cx="50%" cy="40%" r="50%">
+                            <stop offset="0%"   stop-color="#5ba0c8"/>
+                            <stop offset="50%"  stop-color="#3b7a9e"/>
+                            <stop offset="85%"  stop-color="#2c5f7a"/>
+                            <stop offset="100%" stop-color="#1e4a60"/>
+                        </radialGradient>
+                        <!-- 眼白阴影 -->
+                        <radialGradient id="scleraGrad" cx="45%" cy="45%" r="60%">
+                            <stop offset="0%"   stop-color="#ffffff"/>
+                            <stop offset="70%"  stop-color="#f8fafc"/>
+                            <stop offset="100%" stop-color="#e8eef3"/>
+                        </radialGradient>
+                    </defs>
+
+                    <!-- 整组眼睛（用于眨眼） -->
+                    <g class="eye-all" transform-origin="center">
+
+                        <!-- 眼白（杏仁形） -->
+                        <path d="M20,60 Q50,12 100,14 Q150,16 180,58
+                                 Q152,108 100,106 Q48,104 20,60 Z"
+                              fill="url(#scleraGrad)" stroke="#c0d0dc" stroke-width="1.5"/>
+
+                        <!-- 虹膜组（跟鼠标动） -->
+                        <g id="theIris">
+                            <!-- 虹膜 -->
+                            <circle cx="96" cy="56" r="25" class="iris-shape"/>
+                            <!-- 瞳孔 -->
+                            <circle cx="96" cy="56" r="11" class="pupil-shape"/>
+                            <!-- 主高光 -->
+                            <circle cx="88" cy="48" r="7"  class="hl-main"/>
+                            <!-- 次高光 -->
+                            <circle cx="105" cy="62" r="3" class="hl-sub"/>
+                        </g>
+
+                        <!-- 上眼睑线 -->
+                        <path d="M22,60 Q50,16 100,18 Q150,20 178,58"
+                              class="lid-upper"/>
+                        <!-- 下眼睑线 -->
+                        <path d="M26,61 Q50,102 100,102 Q150,100 174,58"
+                              class="lid-lower"/>
+                        <!-- 双眼皮褶皱 -->
+                        <path d="M30,50 Q55,22 100,23 Q145,24 170,50"
+                              class="lid-crease"/>
+                        <!-- 眼角内侧细节 -->
+                        <circle cx="24" cy="60" r="2.5" fill="#e8c0c0" opacity="0.6"/>
+
                     </g>
                 </svg>
             </div>
@@ -382,42 +430,32 @@
 
     <script>
         // ===== 眼球跟随鼠标 =====
-        const leftIris  = document.getElementById("leftIris");
-        const rightIris = document.getElementById("rightIris");
-        const leftEye   = document.getElementById("leftEye");
-        const rightEye  = document.getElementById("rightEye");
-
-        function moveIris(iris, eyeElement, mouseX, mouseY) {
-            let rect = eyeElement.getBoundingClientRect();
-            let cx = rect.left + rect.width / 2;
-            let cy = rect.top + rect.height / 2;
-            let dx = mouseX - cx;
-            let dy = mouseY - cy;
-            let angle = Math.atan2(dy, dx);
-            let dist = Math.min(Math.sqrt(dx*dx + dy*dy) / 14, 16);
-            let mx = Math.cos(angle) * dist;
-            let my = Math.sin(angle) * dist;
-            iris.setAttribute("transform", "translate(" + mx + ", " + my + ")");
-        }
+        const theIris = document.getElementById("theIris");
+        const theEye  = document.getElementById("theEye");
 
         document.addEventListener("mousemove", function(e) {
-            moveIris(leftIris,  leftEye,  e.clientX, e.clientY);
-            moveIris(rightIris, rightEye, e.clientX, e.clientY);
+            let rect = theEye.getBoundingClientRect();
+            let cx = rect.left + rect.width / 2;
+            let cy = rect.top + rect.height / 2;
+            let dx = e.clientX - cx;
+            let dy = e.clientY - cy;
+            let angle = Math.atan2(dy, dx);
+            let dist = Math.min(Math.sqrt(dx*dx + dy*dy) / 13, 14);
+            let mx = Math.cos(angle) * dist;
+            let my = Math.sin(angle) * dist;
+            theIris.setAttribute("transform", "translate(" + mx + ", " + my + ")");
         });
 
         // ===== 自动眨眼 =====
-        function blinkEyes() {
-            leftEye.classList.add("blink");
-            rightEye.classList.add("blink");
+        function blinkEye() {
+            theEye.classList.add("blink");
             setTimeout(function() {
-                leftEye.classList.remove("blink");
-                rightEye.classList.remove("blink");
+                theEye.classList.remove("blink");
             }, 300);
-            // 随机 2~5 秒后再眨一次
             let next = 2000 + Math.random() * 3000;
-            setTimeout(blinkEyes, next);
+            setTimeout(blinkEye, next);
         }
-        setTimeout(blinkEyes, 2500);
+        setTimeout(blinkEye, 2500);
 
         // ===== 实时时钟 =====
         function updateClock() {
