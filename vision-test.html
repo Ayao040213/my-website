@@ -299,8 +299,15 @@
             progressFill.style.width = pct + "%";
         }
 
+        let prevDirection = "";
+
         function randomDirection() {
-            return directions[Math.floor(Math.random() * 4)];
+            let dir;
+            do {
+                dir = directions[Math.floor(Math.random() * 4)];
+            } while (dir === prevDirection);
+            prevDirection = dir;
+            return dir;
         }
 
         function setERotation(dir) {
@@ -325,17 +332,16 @@
             if (gameOver) return;
 
             if (dir === currentDirection) {
-                correctStreak++;
                 currentLevel++;
-                // 过关动画
+                // 闪一下绿色
                 letterEl.style.color = "#27ae60";
                 setTimeout(function() {
                     letterEl.style.color = "#1a3a4a";
                     showLevel();
-                }, 250);
+                }, 200);
             } else {
-                // 答错，显示结果
-                endGame(currentLevel);
+                // 答错了——返回上一个通过的等级
+                endGame(currentLevel - 1);
             }
         }
 
