@@ -140,13 +140,19 @@
         .btn:hover { transform: scale(1.08); }
         .btn:active { transform: scale(0.95); }
 
-        /* ===== 眼睛容器 ===== */
-        .eye-container {
+        /* ===== 眼睛容器（一双眼睛） ===== */
+        .eyes-wrapper {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
             position: relative;
             z-index: 1;
-            width: 160px;
-            height: 100px;
             margin: 0 auto 20px;
+        }
+        .eye-container {
+            position: relative;
+            width: 140px;
+            height: 90px;
         }
         .eye-container svg {
             width: 100%;
@@ -157,11 +163,20 @@
             fill: white;
             stroke: #4a90b8;
             stroke-width: 3;
+            transform-origin: center;
+        }
+        /* 眨眼动画 */
+        .eye-container.blink .eye-outline {
+            animation: blinkFrame 0.3s ease-in-out;
+        }
+        @keyframes blinkFrame {
+            0%   { transform: scaleY(1); }
+            50%  { transform: scaleY(0.08); }
+            100% { transform: scaleY(1); }
         }
         /* 虹膜（彩色部分） */
         .iris {
             fill: #4a90b8;
-            transition: transform 0.05s ease-out;
         }
         /* 瞳孔 */
         .pupil {
@@ -286,19 +301,32 @@
 
         <img class="avatar" src="myphoto.jpg" alt="我的照片">
 
-        <!-- 眼睛 SVG -->
-        <div class="eye-container" id="eyeContainer">
-            <svg viewBox="0 0 160 100">
-                <!-- 眼睛外框（杏仁形） -->
-                <ellipse cx="80" cy="50" rx="75" ry="42"
-                         class="eye-outline"/>
-                <!-- 虹膜组（会跟着鼠标动） -->
-                <g id="irisGroup">
-                    <circle cx="80" cy="50" r="22" class="iris"/>
-                    <circle cx="80" cy="50" r="10" class="pupil"/>
-                    <circle cx="74" cy="44" r="5"  class="highlight"/>
-                </g>
-            </svg>
+        <!-- 一双眼睛 -->
+        <div class="eyes-wrapper">
+            <!-- 左眼 -->
+            <div class="eye-container" id="leftEye">
+                <svg viewBox="0 0 160 100">
+                    <ellipse cx="80" cy="50" rx="70" ry="38"
+                             class="eye-outline"/>
+                    <g id="leftIris">
+                        <circle cx="80" cy="50" r="22" class="iris"/>
+                        <circle cx="80" cy="50" r="10" class="pupil"/>
+                        <circle cx="74" cy="44" r="5"  class="highlight"/>
+                    </g>
+                </svg>
+            </div>
+            <!-- 右眼 -->
+            <div class="eye-container" id="rightEye">
+                <svg viewBox="0 0 160 100">
+                    <ellipse cx="80" cy="50" rx="70" ry="38"
+                             class="eye-outline"/>
+                    <g id="rightIris">
+                        <circle cx="80" cy="50" r="22" class="iris"/>
+                        <circle cx="80" cy="50" r="10" class="pupil"/>
+                        <circle cx="74" cy="44" r="5"  class="highlight"/>
+                    </g>
+                </svg>
+            </div>
         </div>
 
         <h1>EyeE Vision 👀</h1>
@@ -354,29 +382,42 @@
 
     <script>
         // ===== 眼球跟随鼠标 =====
-        const irisGroup = document.getElementById("irisGroup");
-        const eyeContainer = document.getElementById("eyeContainer");
+        const leftIris  = document.getElementById("leftIris");
+        const rightIris = document.getElementById("rightIris");
+        const leftEye   = document.getElementById("leftEye");
+        const rightEye  = document.getElementById("rightEye");
+
+        function moveIris(iris, eyeElement, mouseX, mouseY) {
+            let rect = eyeElement.getBoundingClientRect();
+            let cx = rect.left + rect.width / 2;
+            let cy = rect.top + rect.height / 2;
+            let dx = mouseX - cx;
+            let dy = mouseY - cy;
+            let angle = Math.atan2(dy, dx);
+            let dist = Math.min(Math.sqrt(dx*dx + dy*dy) / 14, 16);
+            let mx = Math.cos(angle) * dist;
+            let my = Math.sin(angle) * dist;
+            iris.setAttribute("transform", "translate(" + mx + ", " + my + ")");
+        }
 
         document.addEventListener("mousemove", function(e) {
-            let eyeRect = eyeContainer.getBoundingClientRect();
-            let eyeCenterX = eyeRect.left + eyeRect.width / 2;
-            let eyeCenterY = eyeRect.top + eyeRect.height / 2;
-
-            // 计算鼠标相对于眼睛中心的角度
-            let dx = e.clientX - eyeCenterX;
-            let dy = e.clientY - eyeCenterY;
-            let angle = Math.atan2(dy, dx);
-
-            // 最大移动距离（限制在眼睛范围内）
-            let maxDist = 18;
-            let dist = Math.min(Math.sqrt(dx*dx + dy*dy) / 15, maxDist);
-
-            let moveX = Math.cos(angle) * dist;
-            let moveY = Math.sin(angle) * dist;
-
-            irisGroup.setAttribute("transform",
-                "translate(" + moveX + ", " + moveY + ")");
+            moveIris(leftIris,  leftEye,  e.clientX, e.clientY);
+            moveIris(rightIris, rightEye, e.clientX, e.clientY);
         });
+
+        // ===== 自动眨眼 =====
+        function blinkEyes() {
+            leftEye.classList.add("blink");
+            rightEye.classList.add("blink");
+            setTimeout(function() {
+                leftEye.classList.remove("blink");
+                rightEye.classList.remove("blink");
+            }, 300);
+            // 随机 2~5 秒后再眨一次
+            let next = 2000 + Math.random() * 3000;
+            setTimeout(blinkEyes, next);
+        }
+        setTimeout(blinkEyes, 2500);
 
         // ===== 实时时钟 =====
         function updateClock() {
