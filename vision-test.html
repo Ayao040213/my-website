@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>视力自测 - EyeE Vision 👀</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        nav {
+            width: 100%;
+            background: rgba(255,255,255,0.95);
+            padding: 15px 0;
+            box-shadow: 0 1px 10px rgba(0,0,0,0.06);
+            text-align: center;
+        }
+        nav a {
+            color: #4a90b8;
+            text-decoration: none;
+            margin: 0 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        nav a:hover { color: #2c6faa; }
+
+        /* ===== 测试区域 ===== */
+        .test-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .test-area h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 6px;
+        }
+        .test-area .subtitle {
+            color: #6b8da8;
+            font-size: 14px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* 进度条 */
+        .progress-wrap {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #8aa0b8;
+            margin-bottom: 4px;
+        }
+        .progress-bar {
+            height: 6px;
+            background: #dce8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a90b8, #2c6faa);
+            border-radius: 3px;
+            transition: width 0.4s;
+        }
+
+        /* E字显示区 */
+        .chart-box {
+            background: white;
+            border: 2px solid #dce8f0;
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 30px;
+            min-width: 300px;
+            min-height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        #letterE {
+            font-family: "Times New Roman", serif;
+            font-weight: bold;
+            color: #1a3a4a;
+            transition: font-size 0.5s, transform 0.3s;
+            line-height: 1;
+            user-select: none;
+        }
+
+        /* 方向按钮 */
+        .direction-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+        .dir-btn {
+            width: 70px;
+            height: 70px;
+            font-size: 28px;
+            border: 2px solid #dce8f0;
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: #4a90b8;
+        }
+        .dir-btn:hover {
+            background: #e8f4f8;
+            border-color: #4a90b8;
+        }
+        .dir-btn:active {
+            background: #4a90b8;
+            color: white;
+            transform: scale(0.93);
+        }
+        .dir-up    { grid-column: 2; grid-row: 1; }
+        .dir-left  { grid-column: 1; grid-row: 2; }
+        .dir-right { grid-column: 3; grid-row: 2; }
+        .dir-down  { grid-column: 2; grid-row: 2; }
+
+        /* 不确定按钮 */
+        .btn-unsure {
+            padding: 12px 28px;
+            font-size: 15px;
+            color: #6b8da8;
+            background: white;
+            border: 1.5px solid #dce8f0;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-unsure:hover {
+            border-color: #a0b8c8;
+            color: #4a90b8;
+        }
+
+        /* 重新开始 */
+        .btn-restart {
+            padding: 14px 36px;
+            font-size: 16px;
+            color: white;
+            background: linear-gradient(135deg, #4a90b8, #2c6faa);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(74,144,184,0.3);
+            display: none;
+        }
+
+        /* 结果提示 */
+        .result-msg {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+        .result-msg.show { display: block; }
+        .result-msg .score {
+            font-size: 42px;
+            font-weight: bold;
+            color: #4a90b8;
+        }
+
+        /* 免责声明 */
+        .disclaimer {
+            text-align: center;
+            color: #a0b8c8;
+            font-size: 11px;
+            max-width: 450px;
+            margin-top: 30px;
+            line-height: 1.5;
+        }
+
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+            color: #a0b8c8;
+            font-size: 13px;
+            background: #ffffff;
+        }
+        footer span { color: #4a90b8; }
+
+        @media (max-width: 600px) {
+            .chart-box { padding: 30px; min-width: auto; min-height: 200px; }
+            .dir-btn { width: 55px; height: 55px; font-size: 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">🏠 回到首页</a>
+        <a href="gallery.html">作品集</a>
+    </nav>
+
+    <div class="test-area">
+
+        <h1>视力自测 👁️</h1>
+        <p class="subtitle">判断"E"字的开口方向，看你能看清多小的字</p>
+
+        <!-- 进度条 -->
+        <div class="progress-wrap">
+            <div class="progress-label">
+                <span>大</span><span>视力表等级</span><span>小</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- E字显示区 -->
+        <div class="chart-box">
+            <div id="letterE">E</div>
+        </div>
+
+        <!-- 方向按钮 -->
+        <div class="direction-btns" id="dirButtons">
+            <button class="dir-btn dir-up"    onclick="guess('up')">↑</button>
+            <button class="dir-btn dir-left"  onclick="guess('left')">←</button>
+            <button class="dir-btn dir-right" onclick="guess('right')">→</button>
+            <button class="dir-btn dir-down"  onclick="guess('down')">↓</button>
+        </div>
+
+        <button class="btn-unsure" id="btnUnsure" onclick="giveUp()">
+            太小了，我看不清 🙈
+        </button>
+
+        <div class="result-msg" id="resultMsg">
+            <div class="score" id="scoreText"></div>
+            <div id="scoreDesc"></div>
+        </div>
+
+        <button class="btn-restart" id="btnRestart" onclick="restart()">🔄 重新测试</button>
+
+        <p class="disclaimer">
+            ⚠️ 本测试仅供娱乐参考，不构成医学诊断。<br>
+            结果受屏幕分辨率、亮度、观看距离等因素影响。<br>
+            如需准确的视力检查，请前往专业眼科机构。
+        </p>
+    </div>
+
+    <footer>
+        由 <span>EyeE Vision</span> 在 Claude Code 老师的帮助下完成 &copy; 2026
+    </footer>
+
+    <script>
+        // 视力等级配置：{字号px, 对应视力, 描述}
+        const levels = [
+            { size: 160, acuity: "20/200", desc: "建议尽快进行专业眼科检查" },
+            { size: 110, acuity: "20/100", desc: "视力偏弱，建议到店检查" },
+            { size: 72,  acuity: "20/70",  desc: "低于正常水平，注意用眼健康" },
+            { size: 50,  acuity: "20/50",  desc: "接近正常，日常基本够用" },
+            { size: 36,  acuity: "20/40",  desc: "基本正常，可以满足日常需求" },
+            { size: 26,  acuity: "20/30",  desc: "视力良好，日常视物清晰" },
+            { size: 19,  acuity: "20/25",  desc: "视力很好，优于平均水平" },
+            { size: 14,  acuity: "20/20",  desc: "标准视力，非常优秀！" },
+            { size: 10,  acuity: "20/15",  desc: "超常视力，飞行员级别！👨‍✈️" },
+        ];
+
+        const directions = ["up", "right", "down", "left"];
+        let currentLevel = 0;
+        let correctStreak = 0;
+        let currentDirection = "up";
+        let gameOver = false;
+
+        const letterEl    = document.getElementById("letterE");
+        const dirButtons  = document.getElementById("dirButtons");
+        const btnUnsure   = document.getElementById("btnUnsure");
+        const btnRestart  = document.getElementById("btnRestart");
+        const resultMsg   = document.getElementById("resultMsg");
+        const scoreText   = document.getElementById("scoreText");
+        const scoreDesc   = document.getElementById("scoreDesc");
+        const progressFill = document.getElementById("progressFill");
+
+        function updateProgress() {
+            let pct = (currentLevel / (levels.length - 1)) * 100;
+            progressFill.style.width = pct + "%";
+        }
+
+        function randomDirection() {
+            return directions[Math.floor(Math.random() * 4)];
+        }
+
+        function setERotation(dir) {
+            const rotations = { up: 0, right: 90, down: 180, left: 270 };
+            letterEl.style.transform = "rotate(" + rotations[dir] + "deg)";
+        }
+
+        function showLevel() {
+            if (currentLevel >= levels.length) {
+                // 通关了
+                endGame(levels.length - 1);
+                return;
+            }
+            let lvl = levels[currentLevel];
+            letterEl.style.fontSize = lvl.size + "px";
+            currentDirection = randomDirection();
+            setERotation(currentDirection);
+            updateProgress();
+        }
+
+        function guess(dir) {
+            if (gameOver) return;
+
+            if (dir === currentDirection) {
+                correctStreak++;
+                currentLevel++;
+                // 过关动画
+                letterEl.style.color = "#27ae60";
+                setTimeout(function() {
+                    letterEl.style.color = "#1a3a4a";
+                    showLevel();
+                }, 250);
+            } else {
+                // 答错，显示结果
+                endGame(currentLevel);
+            }
+        }
+
+        function giveUp() {
+            if (gameOver) return;
+            endGame(Math.max(0, currentLevel - 1));
+        }
+
+        function endGame(finalLevel) {
+            gameOver = true;
+            let idx = Math.min(finalLevel, levels.length - 1);
+            idx = Math.max(0, idx);
+            let result = levels[idx];
+
+            scoreText.textContent = result.acuity;
+            scoreDesc.textContent = result.desc;
+            resultMsg.classList.add("show");
+
+            dirButtons.style.display = "none";
+            btnUnsure.style.display = "none";
+            btnRestart.style.display = "inline-block";
+            letterEl.style.fontSize = "60px";
+            letterEl.style.color = "#4a90b8";
+            setERotation("up");
+            progressFill.style.width = "100%";
+        }
+
+        function restart() {
+            gameOver = false;
+            currentLevel = 0;
+            correctStreak = 0;
+            resultMsg.classList.remove("show");
+            dirButtons.style.display = "";
+            btnUnsure.style.display = "";
+            btnRestart.style.display = "none";
+            letterEl.style.color = "#1a3a4a";
+            updateProgress();
+            showLevel();
+        }
+
+        // 开始测试
+        showLevel();
+    </script>
+</body>
+</html>
